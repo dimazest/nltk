@@ -22,9 +22,10 @@ from nltk.internals import find_binary
 from nltk.parse.api import ParserI
 from nltk.parse.dependencygraph import DependencyGraph
 
+
 class MaltParser(ParserI):
 
-    def __init__(self, tagger=None, mco=None, working_dir=None, additional_java_args=None):
+    def __init__(self, tagger=None, mco=None, working_dir=None, additional_java_args=None, bin=None, verbose=False):
         """
         An interface for parsing with the Malt Parser.
 
@@ -32,11 +33,19 @@ class MaltParser(ParserI):
             will not be required, and MaltParser will use the model file in
             ${working_dir}/${mco}.mco.
         :type mco: str
+
+        :param str bin: The full path to the ``malt`` binary.  If not
+            specified, then nltk will search the system for a ``malt.jar``
+            binary; and if one is not found, it will raise a
+            ``LookupError`` exception.
+        :type bin: str
+
+        :param bool verbose: Be verbose.
+
         """
-        self.config_malt()
+        self.config_malt(bin=bin, verbose=verbose)
         self.mco = 'malt_temp' if mco is None else mco
-        self.working_dir = tempfile.gettempdir() if working_dir is None\
-                           else working_dir
+        self.working_dir = tempfile.gettempdir() if working_dir is None else working_dir
         self.additional_java_args = [] if additional_java_args is None else additional_java_args
         self._trained = mco is not None
 
@@ -69,23 +78,29 @@ class MaltParser(ParserI):
         #: A list of directories that should be searched for the malt
         #: executables.  This list is used by ``config_malt`` when searching
         #: for the malt executables.
-        _malt_path = ['.',
-                     '/usr/lib/malt-1*',
-                     '/usr/share/malt-1*',
-                     '/usr/local/bin',
-                     '/usr/local/malt-1*',
-                     '/usr/local/bin/malt-1*',
-                     '/usr/local/malt-1*',
-                     '/usr/local/share/malt-1*']
+        _malt_path = [
+            '.',
+            '/usr/lib/malt-1*',
+            '/usr/share/malt-1*',
+            '/usr/local/bin',
+            '/usr/local/malt-1*',
+            '/usr/local/bin/malt-1*',
+            '/usr/local/malt-1*',
+            '/usr/local/share/malt-1*',
+        ]
 
         # Expand wildcards in _malt_path:
         malt_path = reduce(add, map(glob.glob, _malt_path))
 
         # Find the malt binary.
-        self._malt_bin = find_binary('malt.jar', bin,
-            searchpath=malt_path, env_vars=['MALTPARSERHOME'],
+        self._malt_bin = find_binary(
+            'malt.jar',
+            bin,
+            searchpath=malt_path,
+            env_vars=['MALTPARSERHOME'],
             url='http://www.maltparser.org/',
-            verbose=verbose)
+            verbose=verbose,
+        )
 
     def parse_all(self, sentence, verbose=False):
         """
@@ -159,8 +174,8 @@ class MaltParser(ParserI):
                                                  dir=self.working_dir,
                                                  delete=False)
         output_file = tempfile.NamedTemporaryFile(prefix='malt_output.conll',
-                                                 dir=self.working_dir,
-                                                 delete=False)
+                                                  dir=self.working_dir,
+                                                  delete=False)
 
         try:
             for sentence in sentences:
@@ -262,7 +277,7 @@ def demo():
     verbose = False
 
     maltParser = MaltParser()
-    maltParser.train([dg1,dg2], verbose=verbose)
+    maltParser.train([dg1, dg2], verbose=verbose)
 
     print(maltParser.raw_parse('John sees Mary', verbose=verbose).tree().pprint())
     print(maltParser.raw_parse('a man runs', verbose=verbose).tree().pprint())

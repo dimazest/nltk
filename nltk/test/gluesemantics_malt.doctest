@@ -22,7 +22,7 @@ Initialize the Dependency Parser
     ...      ('^(every)$', 'univ_quant'),
     ...      ('^(girl|dog)$', 'NN')
     ... ])
-    >>> depparser = MaltParser(tagger=tagger)
+    >>> depparser = MaltParser(tagger=tagger, verbose=True)
 
 --------------------
 Automated Derivation
@@ -64,5 +64,3 @@ default.
 
     >>> readings[0].equiv(readings[1])
     True
-
-

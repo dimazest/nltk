@@ -7,9 +7,8 @@
 # For license information, see LICENSE.TXT
 #
 
-import itertools
-
 from nltk.internals import overridden
+
 
 class ParserI(object):
     """
@@ -32,7 +31,7 @@ class ParserI(object):
         """
         raise NotImplementedError()
 
-    def parse(self, sent):
+    def parse(self, sent, verbose=False):
         """
         :return: An iterator that generates parse trees for the sentence.
         When possible this list is sorted from most likely to least likely.
@@ -42,7 +41,7 @@ class ParserI(object):
         :rtype: iter(Tree)
         """
         if overridden(self.parse_sents):
-            return next(self.parse_sents([sent]))
+            return next(iter(self.parse_sents([sent])))
         elif overridden(self.parse_one):
             return (tree for tree in [self.parse_one(sent)] if tree is not None)
         elif overridden(self.parse_all):
@@ -63,4 +62,4 @@ class ParserI(object):
 
     def parse_one(self, sent):
         """:rtype: Tree or None"""
-        return next(self.parse(sent), None)
+        return next(iter(self.parse(sent)), None)
