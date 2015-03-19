@@ -108,8 +108,8 @@ Here are the first few words from each of NLTK's plaintext corpora:
 
     >>> nltk.corpus.abc.words()
     ['PM', 'denies', 'knowledge', 'of', 'AWB', ...]
-    >>> nltk.corpus.genesis.words()
-    [u'In', u'the', u'beginning', u'God', u'created', ...]
+    >>> print(' '.join(nltk.corpus.genesis.words()[:5]))
+    In the beginning God created
     >>> nltk.corpus.gutenberg.words(fileids='austen-emma.txt')
     ['[', 'Emma', 'by', 'Jane', 'Austen', '1816', ...]
     >>> nltk.corpus.inaugural.words()
@@ -198,8 +198,8 @@ CoNLL 2002 Corpus includes named entity chunks.
       (PP of/IN)
       (NP the/DT Exchequer/NNP)
       ...)
-    >>> print(conll2002.sents()) # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-    [[u'Sao', u'Paulo', u'(', u'Brasil', u')', u',', ...], [u'-'], ...]
+    >>> print(' '.join(conll2002.sents()[0]))
+    Sao Paulo ( Brasil ) , 23 may ( EFECOM ) .
     >>> for tree in conll2002.chunked_sents()[:2]:
     ...     print(tree) # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
     (S
@@ -235,10 +235,7 @@ to the entire chunk).
     ['.']], [['The'], ['jury'], ['further'], ['said'], ... ['.']], ...]
     >>> list(map(str, semcor.tagged_chunks(tag='both')[:3]))
     ['(DT The)', "(Lemma('group.n.01.group') (NE (NNP Fulton County Grand Jury)))", "(Lemma('state.v.01.say') (VB said))"]
-    >>> [[str(c) for c in s] for s in semcor.tagged_sents(tag='both')[:2]]
-    [['(DT The)', "(Lemma('group.n.01.group') (NE (NNP Fulton County Grand Jury)))", ...
-     '(None .)'], ['(DT The)', ... '(None .)']]
-    
+
 
 The IEER corpus is another chunked corpus.  This corpus is unusual in
 that each corpus item contains multiple documents.  (This reflects the
@@ -351,11 +348,12 @@ Reading the Sinica Treebank:
 Reading the CoNLL 2007 Dependency Treebanks:
 
     >>> from nltk.corpus import conll2007
-    >>> conll2007.sents('esp.train')[0] # doctest: +SKIP
+
+    >>> conll2007.sents('esp.train')[0] # doctest:
     ['El', 'aumento', 'del', 'índice', 'de', 'desempleo', ...]
-    >>> conll2007.parsed_sents('esp.train')[0] # doctest: +SKIP
+    >>> conll2007.parsed_sents('esp.train')[0] # doctest:
     <DependencyGraph with 38 nodes>
-    >>> print(conll2007.parsed_sents('esp.train')[0].tree()) # doctest: +SKIP
+    >>> print(conll2007.parsed_sents('esp.train')[0].tree())
     (fortaleció
       (aumento El (del (índice (de (desempleo estadounidense)))))
       hoy
@@ -371,6 +369,10 @@ Reading the CoNLL 2007 Dependency Treebanks:
             (a 0,9452_dólares)
             (frente_a , (0,9349_dólares los (de (mañana esta)))))))
       .)
+
+    >>> dc = conll2007.parsed_sents()
+    >>> len(dc)
+    6618
 
 NLTK also provides a corpus reader for the York-Toronto-Helsinki
 Parsed Corpus of Old English Prose (YCOE); but the corpus itself is

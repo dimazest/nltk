@@ -8,12 +8,14 @@
 # For license information, see LICENSE.TXT
 
 import codecs
+import warnings
 
 from nltk.parse import DependencyGraph
 from nltk.tokenize import *
 
 from nltk.corpus.reader.util import *
 from nltk.corpus.reader.api import *
+
 
 class DependencyCorpusReader(SyntaxCorpusReader):
 
@@ -59,7 +61,15 @@ class DependencyCorpusReader(SyntaxCorpusReader):
     def parsed_sents(self, fileids=None):
         sents=concat([DependencyCorpusView(fileid, False, True, True, encoding=enc)
                       for fileid, enc in self.abspaths(fileids, include_encoding=True)])
-        return [DependencyGraph(sent) for sent in sents]
+
+        parsed = []
+        for sent in sents:
+            try:
+                parsed.append(DependencyGraph(sent))
+            except:
+                warnings.warn('Could not build a dependecy graph!', stacklevel=2)
+
+        return parsed
 
 
 class DependencyCorpusView(StreamBackedCorpusView):
